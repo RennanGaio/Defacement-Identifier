@@ -97,7 +97,7 @@ if len(sys.argv) < 2:
 else:
 	raw = extraiHTML(sys.argv[1])
 
-	print raw
+	#print raw
 
 	#tira caracteres especiais que podem existir no html
 	trataArquivo(raw)
