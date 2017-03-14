@@ -112,7 +112,11 @@ else:
 	tokensGeral=criaListaTags(listaFrasesRuim)
 
 	tokensGeral= limpaHTML(tokensGeral)
+	cont = 0
 
 	for word in tokensGeral:
 		if word.lower() in blacklist:
 			print 'hacked! '+word
+			cont+=1
+	if cont==0:
+		print '"safe"'
