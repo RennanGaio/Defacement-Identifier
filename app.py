@@ -16,6 +16,19 @@ def extraiHTML (url):
 
 	return paginaTxt
 
+
+#uma versao alternativa para outra compatibilidade 
+#para instalar o beautifulsoup: sudo pip install beautifulsoup4
+def extraiHTML2 (url):
+	from bs4 import BeautifulSoup
+	import requests
+
+	response = requests.get(url)
+
+	soup = BeautifulSoup(response.content, "html.parser")
+
+	return soup
+
 def limpaHTML (listaDeTags):
 	listaLimpa=[]
 	cont=len(listaDeTags)
@@ -112,8 +125,10 @@ else:
 	tokensGeral=criaListaTags(listaFrasesRuim)
 
 	tokensGeral= limpaHTML(tokensGeral)
+
 	cont = 0
 
+	#tenho q transformar essa parte do codigo no analisador
 	for word in tokensGeral:
 		if word.lower() in blacklist:
 			print 'hacked! '+word
