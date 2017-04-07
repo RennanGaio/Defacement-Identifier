@@ -9,17 +9,15 @@ import sys
 #devo complementar o codigo para conseguir ver os possiveis padroes de um defacement
 #em vez de usar black list, utilizar a estrutura do html
 
-def extraiHTML (url):
+def getHTML (url):
 	import urllib2
-
-	paginaTxt = urllib2.urlopen(url).read()
-
-	return paginaTxt
+	pageTxt = urllib2.urlopen(url).read()
+	return pageTxt
 
 
 #uma versao alternativa para outra compatibilidade 
 #para instalar o beautifulsoup: sudo pip install beautifulsoup4
-def extraiHTML2 (url):
+def getHTMLBeautify (url):
 	from bs4 import BeautifulSoup
 	import requests
 
@@ -29,51 +27,51 @@ def extraiHTML2 (url):
 
 	return soup
 
-def limpaHTML (listaDeTags):
-	listaLimpa=[]
-	cont=len(listaDeTags)
+def extractCleanHTML (tagList):
+	cleanList = []
+	count = len(tagList)
 	index = 0
 
-	while (cont-index)>0:
-		while listaDeTags[index]==".":
+	while (count-index)>0:
+		while tagList[index]==".":
 			index+=1
 
-		while (index<cont)and(listaDeTags[index]=="<"):
+		while (index<count)and(tagList[index]=="<"):
 			index+=1
-			while (listaDeTags[index]!=">"):
+			while (tagList[index]!=">"):
 				index+=1
 			index+=1
 		
-		if (index<cont):
-			listaLimpa.append(listaDeTags[index])
+		if (index<count):
+			cleanList.append(tagList[index])
 			index+=1
-	return listaLimpa
+	return cleanList
 
 
-def criaListaTags (listaFrasesBoa):
+def createTagList (allowedPhrases):
 	#obtem os tokens, separados por frase
-	tokensPorFrase = []
-	for frase in listaFrasesBoa:
-		tokensPorFrase.append(nltk.word_tokenize(frase))
+	tokensPerPhrase = []
+	for phrase in allowedPhrases:
+		tokensPerPhrase.append(nltk.word_tokenize(phrase))
 
 	#gera uma lista com todos os tokens do texto
-	tokensGeral = []
-	for frase in tokensPorFrase:
-		for token in frase:
-			tokensGeral.append(token)
+	tokens = []
+	for phrase in tokensPerPhrase:
+		for token in phrase:
+			tokens.append(token)
 
 	#obtem a classificacao gramatica das palavras
-	#listaTagsRuim = nltk.pos_tag(tokensGeral)
+	#listaTagsRuim = nltk.pos_tag(tokens)
 
 	#gera uma lista de classificacoes mais facil de mexer
 	#listaTagsBoa = []
 	#for par in listaTagsRuim:
 	#	listaTagsBoa.append([str(par[0]),str(par[1])])
 	#return listaTagsBoa
-	return tokensGeral
+	return tokens
 
 
-def trataArquivo (raw):	
+def correctFile (raw):	
 	raw=raw.replace(b'\xc2\xa0', b' ')
 	raw=raw.replace(b'\xe2\x80\x93', b', ')
 	raw=raw.replace(b'\xc3\xaf', b'i')
@@ -106,32 +104,32 @@ blacklist=['hacked', 'hack', 'hackers', 'lulzsec', 'anonymous', 'teamp0ison', 't
 #abre o arquivo
 #arquivo = open('teste.txt')
 if len(sys.argv) < 2:
-	print 'como usar: python <nome do programa> <ULR do site>'
+	print "Usage: python " + sys.argv[0] + " <site's URL>"
 else:
-	raw = extraiHTML(sys.argv[1])
+	raw = getHTML(sys.argv[1])
 
 	#print raw
 
 	#tira caracteres especiais que podem existir no html
-	trataArquivo(raw)
+	correctFile(raw)
 
 	#obtem o segmentador de sentencas
-	sent_tokenizer=nltk.data.load("tokenizers/punkt/english.pickle")
+	sent_tokenizer = nltk.data.load("tokenizers/punkt/english.pickle")
 
 	#separa as frases do texto
-	listaFrasesRuim = sent_tokenizer.tokenize(raw)
+	badPhrases = sent_tokenizer.tokenize(raw)
 
 	#cria a lista de tokens do texto
-	tokensGeral=criaListaTags(listaFrasesRuim)
+	tokens = createTagList(badPhrases)
 
-	tokensGeral= limpaHTML(tokensGeral)
+	tokens = extractCleanHTML(tokens)
 
-	cont = 0
+	count = 0
 
 	#tenho q transformar essa parte do codigo no analisador
-	for word in tokensGeral:
+	for word in tokens:
 		if word.lower() in blacklist:
 			print 'hacked! '+word
-			cont+=1
-	if cont==0:
+			count += 1
+	if count == 0:
 		print '"safe"'
