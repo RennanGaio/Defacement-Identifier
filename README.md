@@ -1,14 +1,30 @@
 # Defacement-Identifier
 
-author: Rennan de Lucena Gaio
+Authors: Rennan de Lucena Gaio & João Luis da Silva Guio Soares
 
-usage:
-  #install packages "sudo pip install nltk" and "sudo pip install urllib2"
-  install packages: sudo bash requirements.sh  
+## pre-install
 
+### install packages 
+  ```
+  sudo pip install nltk
+  sudo pip install urllib2
+  ```
+  or: 
+  ```
+  sudo bash requirements.sh  
+  ```
+
+  The NLTK punkt english package is needed as the tokenizer.
+  ```python
+  python
+  import nltk
+  nltk.download()
+  ```
+  Use the GUI to download the punkt model.
+## usage
   execute: python path/to/app.py URL
 
-return:
+## return
  'hacked + word identified' - if site may be hacked
  
  "safe" - if site may be ok
